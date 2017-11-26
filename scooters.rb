@@ -1,26 +1,45 @@
 def calc(scooters:, c:, p:)
-  fleet_engineers = 0
-  # complexes = scooters.select { |sc| sc > p }
-  # fleet_engineers += (scooters.length - complexes.length)
-  complexes = scooters
+  diff = c - p
+  scooters.sort! { |a, b| b <=> a }
 
-  complexes.sort![-1] -= c
+  # The manager should be either where his presence results on a multiple of P
+  # or as close to that as possible, from the districts with more scooters
+  manager = scooters.find_index { |scoots| (scoots - diff).to_f % p == 0 } || scooters.index(scooters.max_by { |scoots| (scoots - diff).fdiv(p) % 1 })
+  scooters[manager] -= c
 
-  fleet_engineers += complexes.inject(0) { |mem, var| mem + var.fdiv(p).ceil }
-
-  { fleet_engineers: fleet_engineers }
+  { fleet_engineers: scooters.inject(0) { |result, scoots| result + scoots.fdiv(p).ceil } }
 end
 
-result = calc({ scooters: [8, 5, 14, 7, 19, 17], c: 12, p: 7 })
-expected = { fleet_engineers: 10 }
-raise "ERRO: result should've been #{expected} but was #{result}" unless result == expected
+result = calc({ scooters: [8, 14, 7, 19, 17], c: 12, p: 7 })
+expected = { fleet_engineers: 9 }
+raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
 
 result = calc({ scooters: [15, 10], c: 12, p: 5 })
 expected = { fleet_engineers: 3 }
-raise "ERRO: result should've been #{expected} but was #{result}" unless result == expected
+raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
+
+result = calc({ scooters: [11, 15, 13, 9, 10], c: 9, p: 5 })
+expected = { fleet_engineers: 11 }
+raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
+
+result = calc({ scooters: [11, 15, 13, 7, 14, 25], c: 9, p: 5 })
+expected = { fleet_engineers: 17 }
+raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
+
+result = calc({ scooters: [11, 15, 13, 7, 17, 25], c: 9, p: 5 })
+expected = { fleet_engineers: 18 }
+raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
+
+result = calc({ scooters: [11, 15, 13, 10], c: 9, p: 5 })
+expected = { fleet_engineers: 9 }
+raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
+
+result = calc({ scooters: [11, 15, 13, 14], c: 9, p: 5 })
+expected = { fleet_engineers: 10 }
+raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
 
 result = calc({ scooters: [11, 15, 13], c: 9, p: 5 })
 expected = { fleet_engineers: 7 }
-raise "ERRO: result should've been #{expected} but was #{result}" unless result == expected
+raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
 
 p 'ALL PASSED!'
