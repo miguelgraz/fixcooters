@@ -59,4 +59,8 @@ result = calc({ scooters: [13, 15, 19], c: 16, p: 5 })
 expected = { fleet_engineers: 7 }
 raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
 
+result = calc({ scooters: [13, 17, 23], c: 2, p: 15 })
+expected = { fleet_engineers: 4 }
+raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
+
 p 'ALL PASSED!'
