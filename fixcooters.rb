@@ -2,10 +2,15 @@ def calc(scooters:, c:, p:)
   diff = c - p
   scooters.sort! { |a, b| b <=> a }
 
-  # The manager should be either where his presence results on a multiple of P
-  # or as close to that as possible, from the districts with more scooters
-  manager = scooters.find_index { |scoots| (scoots - diff).to_f % p == 0 } || scooters.index(scooters.max_by { |scoots| (scoots - diff).fdiv(p) % 1 })
-  scooters[manager] -= c
+  if c >= scooters[0]
+    # If the manager can handle the most busy district alone
+    scooters.shift
+  else
+    # The manager should be either where his presence results on a multiple of P
+    # or as close to that as possible, from the districts with more scooters
+    manager = scooters.find_index { |scoots| (scoots - diff).to_f % p == 0 } || scooters.index(scooters.max_by { |scoots| (scoots - diff).fdiv(p) % 1 })
+    scooters[manager] -= c
+  end
 
   { fleet_engineers: scooters.inject(0) { |result, scoots| result + scoots.fdiv(p).ceil } }
 end
@@ -39,6 +44,18 @@ expected = { fleet_engineers: 10 }
 raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
 
 result = calc({ scooters: [11, 15, 13], c: 9, p: 5 })
+expected = { fleet_engineers: 7 }
+raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
+
+result = calc({ scooters: [13, 15, 22], c: 200, p: 5 })
+expected = { fleet_engineers: 6 }
+raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
+
+result = calc({ scooters: [13, 15, 20], c: 20, p: 5 })
+expected = { fleet_engineers: 6 }
+raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
+
+result = calc({ scooters: [13, 15, 19], c: 16, p: 5 })
 expected = { fleet_engineers: 7 }
 raise "ERROR: result should've been #{expected} but was #{result}" unless result == expected
 
